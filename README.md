@@ -8,9 +8,11 @@ I have practical experience in functional, regression, UI, validation, mobile, A
 
 Currently learning QA Automation with JavaScript.
 
+---
+
 ## Projects
 
-### 1. [Hillel Auto IT](./Hillel-Auto-IT)
+### 1. [Hillel Auto IT](Hillel-Auto-IT/)
 
 Web application for managing cars and fuel expenses.
 
@@ -26,7 +28,7 @@ Web application for managing cars and fuel expenses.
 
 ---
 
-### 2. [Help for Kittens](./Help-for-Kittens)
+### 2. [Help for Kittens](Help-for-Kittens/)
 
 Web application created to support animal shelters through donations and virtual card management.
 
@@ -42,7 +44,7 @@ Web application created to support animal shelters through donations and virtual
 
 ---
 
-### 3. [The Game of Craps](./Craps-Game)
+### 3. [The Game of Craps](Craps-Game/)
 
 Web application that simulates the Craps dice game.
 
@@ -55,6 +57,8 @@ Web application that simulates the Craps dice game.
 - Bug reporting
 
 **Artifacts:** Checklist, Executed Checklist, Bug Reports, State Transition Diagram.
+
+---
 
 ## Tools & Technologies
 
@@ -82,3 +86,11 @@ Web application that simulates the Craps dice game.
 - SQL & Database Testing
 - Requirements Traceability
 - State Transition Testing
+
+---
+
+## PDF Documents
+
+Some PDF documents in this portfolio may not be previewed correctly by GitHub's built-in PDF viewer.
+
+If a PDF preview is unavailable, please download the file to view the document.
