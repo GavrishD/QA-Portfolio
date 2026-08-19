@@ -1,0 +1,1560 @@
+{
+  "info": {
+    "_postman_id": "7e4ad0e2-e597-43ba-92b5-14d44ca0f31c",
+    "name": "QA Auto API HW",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "56346611",
+    "_collection_link": "https://go.postman.co/collection/56346611-7e4ad0e2-e597-43ba-92b5-14d44ca0f31c?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "00 - Sign In",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"User authenticated\", function () {",
+              "    pm.expect(jsonData.status).to.eql(\"ok\");",
+              "    pm.expect(jsonData.data.userId).to.exist;",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"daria_updated_1@gmail.com\",\n  \"password\": \"NewTest1234\",\n  \"remember\": false\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/signin",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "signin"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "01 - Create User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Create user request handled correctly\", function () {",
+              "    pm.expect([201, 400]).to.include(pm.response.code);",
+              "});",
+              "",
+              "pm.test(\"Response status is valid\", function () {",
+              "    pm.expect(jsonData.status).to.be.oneOf([\"ok\", \"error\"]);",
+              "});",
+              "",
+              "if (jsonData.status === \"ok\") {",
+              "    pm.environment.set(\"userId\", jsonData.data.userId);",
+              "",
+              "    pm.test(\"User ID is returned\", function () {",
+              "        pm.expect(jsonData.data.userId).to.exist;",
+              "    });",
+              "}",
+              "",
+              "if (jsonData.status === \"error\") {",
+              "    pm.test(\"User already exists message returned\", function () {",
+              "        pm.expect(jsonData.message).to.eql(\"User already exists\");",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const uniqueEmail = `daria_${Date.now()}@gmail.com`;",
+              "",
+              "pm.environment.set(\"userEmail\", uniqueEmail);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Daria\",\n  \"lastName\": \"QA\",\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"Test1234\",\n  \"repeatPassword\": \"Test1234\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/signup",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "signup"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "02 - Get Current User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"User data returned\", function () {",
+              "    const jsonData = pm.response.json();",
+              "",
+              "    pm.expect(jsonData.status).to.eql(\"ok\");",
+              "    pm.expect(jsonData.data).to.exist;",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users/current",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "current"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "03 - Get User Profile",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"User profile returned\", function () {",
+              "    pm.expect(jsonData.status).to.eql(\"ok\");",
+              "    pm.expect(jsonData.data.name).to.eql(\"Daria\");",
+              "    pm.expect(jsonData.data.lastName).to.eql(\"QA\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users/profile",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "profile"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "04 - Update User Profile",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Profile updated\", function () {",
+              "    const jsonData = pm.response.json();",
+              "",
+              "    pm.expect(jsonData.status).to.eql(\"ok\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"DariaUpdated\",\n  \"lastName\": \"Gavrish\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users/profile",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "profile"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "05 - Get User Settings",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"User settings returned\", function () {",
+              "    const jsonData = pm.response.json();",
+              "",
+              "    pm.expect(jsonData.status).to.eql(\"ok\");",
+              "    pm.expect(jsonData.data.currency).to.exist;",
+              "    pm.expect(jsonData.data.distanceUnits).to.exist;",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users/settings",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "settings"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "06 - Update User Settings",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"currency\": \"eur\",\n  \"distanceUnits\": \"ml\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users/settings",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "settings"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "07 - Get User Settings After Update",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users/settings",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "settings"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "08 - Reset Password By Token",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users/resetPassword/374166/test-token",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "resetPassword",
+            "374166",
+            "test-token"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "09 - Update User Email",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"daria_updated_1@gmail.com\",\n  \"password\": \"Test1234\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users/email",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "email"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "10 - Update User Password (Positive)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Password updated\", function () {",
+              "    const jsonData = pm.response.json();",
+              "",
+              "    pm.expect(jsonData.status).to.eql(\"ok\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"oldPassword\": \"Test1234\",\n  \"password\": \"NewTest1234\",\n  \"repeatPassword\": \"NewTest1234\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users/password",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "password"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "11 - Update User Password (Negative)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Passwords do not match error returned\", function () {",
+              "    const jsonData = pm.response.json();",
+              "",
+              "    pm.expect(jsonData.message).to.eql(\"Passwords do not match\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"oldPassword\": \"NewTest1234\",\n  \"password\": \"Password123\",\n  \"repeatPassword\": \"Password456\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users/password",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "password"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "12 - Get Car Brands",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/cars/brands",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cars",
+            "brands"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "13 - Get Car Brand By ID (Positive)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/cars/brands/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cars",
+            "brands",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "14 - Get Car Brand By ID (Negative)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/cars/brands/999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cars",
+            "brands",
+            "999"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "15 - Get Car Models",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/cars/models",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cars",
+            "models"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "16 - Get Car Model By ID (Positive)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/cars/models/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cars",
+            "models",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "17 - Get Car Model By ID (Negative)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/cars/models/999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cars",
+            "models",
+            "999"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "18 - Get User Cars",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/cars",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cars"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "19 - Create New Car (Positive)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Car successfully created\", function () {",
+              "    const jsonData = pm.response.json();",
+              "",
+              "    pm.expect(jsonData.status).to.eql(\"ok\");",
+              "    pm.expect(jsonData.data.brand).to.eql(\"Audi\");",
+              "    pm.expect(jsonData.data.model).to.eql(\"TT\");",
+              "    pm.expect(jsonData.data.mileage).to.eql(122);",
+              "});",
+              "",
+              "pm.test(\"Car ID is returned\", function () {",
+              "    const jsonData = pm.response.json();",
+              "",
+              "    pm.expect(jsonData.data.id).to.exist;",
+              "    pm.environment.set(\"carId\", jsonData.data.id);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"carBrandId\": 1,\n  \"carModelId\": 1,\n  \"mileage\": 122\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/cars",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cars"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "20 - Create New Car (Negative)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Error message is correct\", function () {",
+              "    const jsonData = pm.response.json();",
+              "",
+              "    pm.expect(jsonData.status).to.eql(\"error\");",
+              "    pm.expect(jsonData.message).to.eql(\"Mileage has to be from 0 to 999999\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"carBrandId\": 1,\n  \"carModelId\": 1,\n  \"mileage\": -1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/cars",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cars"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "21 - Get User Cars (Verification)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Created car is returned in user cars list\", function () {",
+              "    const jsonData = pm.response.json();",
+              "",
+              "    pm.expect(jsonData.status).to.eql(\"ok\");",
+              "    pm.expect(jsonData.data).to.be.an(\"array\");",
+              "",
+              "    const carId = Number(pm.environment.get(\"carId\"));",
+              "    const createdCar = jsonData.data.find(car => car.id === carId);",
+              "",
+              "    pm.expect(createdCar).to.exist;",
+              "    pm.expect(createdCar.brand).to.eql(\"Audi\");",
+              "    pm.expect(createdCar.model).to.eql(\"TT\");",
+              "    pm.expect(createdCar.mileage).to.eql(122);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/cars",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cars"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "22 - Get User Car By ID (Positive)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Correct car data is returned\", function () {",
+              "    const jsonData = pm.response.json();",
+              "",
+              "    pm.expect(jsonData.status).to.eql(\"ok\");",
+              "    pm.expect(jsonData.data.id).to.eql(Number(pm.environment.get(\"carId\")));",
+              "    pm.expect(jsonData.data.brand).to.eql(\"Audi\");",
+              "    pm.expect(jsonData.data.model).to.eql(\"TT\");",
+              "    pm.expect(jsonData.data.mileage).to.eql(122);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/cars/{{carId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cars",
+            "{{carId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "23 - Get User Car By ID (Negative)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 404\", function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test(\"Correct error message is returned\", function () {",
+              "    const jsonData = pm.response.json();",
+              "",
+              "    pm.expect(jsonData.status).to.eql(\"error\");",
+              "    pm.expect(jsonData.message).to.eql(\"Car not found\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/cars/999999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cars",
+            "999999"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "24 - Update Car (Positive)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Car updated successfully\", function () {",
+              "    const jsonData = pm.response.json();",
+              "",
+              "    pm.expect(jsonData.status).to.eql(\"ok\");",
+              "    pm.expect(jsonData.data.id).to.eql(Number(pm.environment.get(\"carId\")));",
+              "    pm.expect(jsonData.data.mileage).to.eql(500);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"carBrandId\": 1,\n  \"carModelId\": 1,\n  \"mileage\": 500\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/cars/{{carId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cars",
+            "{{carId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "25 - Update Car (Negative)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Mileage validation error returned\", function () {",
+              "    const jsonData = pm.response.json();",
+              "",
+              "    pm.expect(jsonData.message).to.eql(\"New mileage is less then previous entry\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"carBrandId\": 1,\n  \"carModelId\": 1,\n  \"mileage\": -1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/cars/{{carId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cars",
+            "{{carId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "29 - Get Expenses (Positive)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Expenses list returned\", function () {",
+              "    pm.expect(jsonData.status).to.eql(\"ok\");",
+              "    pm.expect(jsonData.data).to.be.an(\"array\");",
+              "});",
+              "",
+              "pm.test(\"Current page is returned\", function () {",
+              "    pm.expect(jsonData.currentPage).to.eql(1);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/expenses?carId={{carId}}&page=1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "expenses"
+          ],
+          "query": [
+            {
+              "key": "carId",
+              "value": "{{carId}}"
+            },
+            {
+              "key": "page",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "30 - Create Expense (Positive)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Expense created successfully\", function () {",
+              "    pm.expect(jsonData.status).to.eql(\"ok\");",
+              "    pm.expect(jsonData.data.id).to.exist;",
+              "",
+              "    pm.environment.set(\"expenseId\", jsonData.data.id);",
+              "});",
+              "",
+              "pm.test(\"Expense data is correct\", function () {",
+              "    pm.expect(jsonData.data.carId).to.eql(Number(pm.environment.get(\"carId\")));",
+              "    pm.expect(jsonData.data.mileage).to.eql(Number(pm.environment.get(\"expenseMileage\")));",
+              "    pm.expect(jsonData.data.liters).to.eql(20);",
+              "    pm.expect(jsonData.data.totalCost).to.eql(1190);",
+              "});",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const expenseMileage = Number(pm.environment.get(\"expenseMileage\") || 1000) + 1;",
+              "",
+              "pm.environment.set(\"expenseMileage\", expenseMileage);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"carId\": {{carId}},\n  \"reportedAt\": \"2026-07-06\",\n  \"mileage\": {{expenseMileage}},\n  \"liters\": 20,\n  \"totalCost\": 1000,\n  \"forceMileage\": false\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/expenses",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "expenses"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "31 - Create Expense (Negative)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status code is 400\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Error returned\", function () {",
+              "    pm.expect(jsonData.status).to.eql(\"error\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"carId\": {{carId}},\n  \"reportedAt\": \"2026-07-06\",\n  \"mileage\": -1,\n  \"liters\": 20,\n  \"totalCost\": 1000,\n  \"forceMileage\": false\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/expenses",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "expenses"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "32 - Get Expense By ID (Positive)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Expense returned successfully\", function () {",
+              "    pm.expect(jsonData.status).to.eql(\"ok\");",
+              "    pm.expect(jsonData.data.id).to.exist;",
+              "});",
+              "",
+              "pm.test(\"Correct expense is returned\", function () {",
+              "    pm.expect(jsonData.data.id).to.eql(Number(pm.environment.get(\"expenseId\")));",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/expenses/{{expenseId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "expenses",
+            "{{expenseId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "33 - Get Expense By ID (Negative)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status code is 404\", function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test(\"Expense not found error returned\", function () {",
+              "    pm.expect(jsonData.status).to.eql(\"error\");",
+              "    pm.expect(jsonData.message).to.eql(\"Expense not found\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/expenses/999999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "expenses",
+            "999999"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "34 - Update Expense (Positive)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Expense updated successfully\", function () {",
+              "    pm.expect(jsonData.status).to.eql(\"ok\");",
+              "});",
+              "",
+              "pm.test(\"Updated data is returned\", function () {",
+              "    pm.expect(Number(jsonData.data.id)).to.eql(Number(pm.environment.get(\"expenseId\")));",
+              "    pm.expect(jsonData.data.mileage).to.eql(1003);",
+              "    pm.expect(jsonData.data.liters).to.eql(25);",
+              "    pm.expect(jsonData.data.totalCost).to.eql(1200);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"carId\": {{carId}},\n    \"reportedAt\": \"2026-07-06\",\n    \"mileage\": 1003,\n    \"liters\": 25,\n    \"totalCost\": 1200,\n    \"forceMileage\": false\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/expenses/{{expenseId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "expenses",
+            "{{expenseId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "35 - Delete Expense (Positive)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Expense deleted successfully\", function () {",
+              "    pm.expect(jsonData.status).to.eql(\"ok\");",
+              "});",
+              "",
+              "pm.test(\"Deleted expense id is returned\", function () {",
+              "    pm.expect(Number(jsonData.data.expenseId))",
+              "        .to.eql(Number(pm.environment.get(\"expenseId\")));",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/expenses/{{expenseId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "expenses",
+            "{{expenseId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "36 - Delete Expense (Verification)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status code is 404\", function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test(\"Deleted expense is not found\", function () {",
+              "    pm.expect(jsonData.status).to.eql(\"error\");",
+              "    pm.expect(jsonData.message).to.eql(\"Expense not found\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/expenses/{{expenseId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "expenses",
+            "{{expenseId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "26 - Delete Car (Positive)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Car deleted successfully\", function () {",
+              "    pm.expect(jsonData.status).to.eql(\"ok\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/cars/{{carId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cars",
+            "{{carId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "27 - Get Deleted Car (Verification)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status code is 404\", function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test(\"Deleted car is not found\", function () {",
+              "    pm.expect(jsonData.status).to.eql(\"error\");",
+              "    pm.expect(jsonData.message).to.eql(\"Car not found\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/cars/{{carId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cars",
+            "{{carId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "28 - Delete Car (Negative)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status code is 404\", function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test(\"Already deleted car is not found\", function () {",
+              "    pm.expect(jsonData.status).to.eql(\"error\");",
+              "    pm.expect(jsonData.message).to.eql(\"Car not found\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/cars/{{carId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cars",
+            "{{carId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "37 - Get Instructions",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Instructions list returned\", function () {",
+              "    pm.expect(jsonData.status).to.eql(\"ok\");",
+              "    pm.expect(jsonData.data).to.be.an(\"array\");",
+              "});",
+              "",
+              "pm.test(\"Instruction id saved\", function () {",
+              "    pm.expect(jsonData.data[0].id).to.exist;",
+              "    pm.environment.set(\"instructionId\", jsonData.data[0].id);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/instructions?carBrandId=1&carModelId=1&page=1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "instructions"
+          ],
+          "query": [
+            {
+              "key": "carBrandId",
+              "value": "1"
+            },
+            {
+              "key": "carModelId",
+              "value": "1"
+            },
+            {
+              "key": "page",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "38 - Get Instruction By ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Instruction returned successfully\", function () {",
+              "    pm.expect(jsonData.status).to.eql(\"ok\");",
+              "    pm.expect(jsonData.data.id).to.eql(Number(pm.environment.get(\"instructionId\")));",
+              "    pm.expect(jsonData.data.filename).to.exist;",
+              "    pm.expect(jsonData.data.description).to.exist;",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/instructions/{{instructionId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "instructions",
+            "{{instructionId}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
